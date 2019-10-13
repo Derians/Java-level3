@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:controller="client.ControllerPC"
+      xmlns:fx="http://javafx.com/fxml" alignment="center">
+
+
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox HBox.hgrow="ALWAYS">
+            <TextArea fx:id="chatAreaPC" editable="false" VBox.vgrow="ALWAYS"/>
+            <HBox>
+
+                <TextField fx:id="msgFieldPC" HBox.hgrow="ALWAYS" promptText="Введите сообщение..." onAction="#sendPersMsg"/>
+                <Button text="Отправить" onAction="#sendPersMsg"/>
+
+            </HBox>
+        </VBox>
+    </HBox>
+
+</VBox>
