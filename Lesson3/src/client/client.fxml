@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.Controller">
+    <Pane fx:id="chatPanel" visible="false">
+        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                  prefHeight="400.0" prefWidth="600.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0" prefWidth="124.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="504.0" minWidth="10.0" prefWidth="476.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="374.0" minHeight="10.0" prefHeight="366.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="194.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <ListView fx:id="clientsList" prefHeight="275.0" prefWidth="124.0"
+                      GridPane.rowSpan="2">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </ListView>
+            <GridPane prefHeight="34.0" prefWidth="458.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="422.0" minWidth="10.0" prefWidth="412.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="232.0" minWidth="10.0" prefWidth="64.0"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <GridPane.margin>
+                    <Insets bottom="5.0"/>
+                </GridPane.margin>
+                <TextField fx:id="msgField" onAction="#sendMsg" promptText="Введите сообщение...">
+                    <GridPane.margin>
+                        <Insets left="5.0" right="5.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <Button mnemonicParsing="false" onAction="#sendMsg" prefHeight="25.0" prefWidth="62.0"
+                        text="Send" GridPane.columnIndex="1">
+                    <GridPane.margin>
+                        <Insets right="5.0"/>
+                    </GridPane.margin>
+                </Button>
+            </GridPane>
+            <TextArea fx:id="chatArea" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </TextArea>
+        </GridPane>
+    </Pane>
+    <Pane fx:id="loginPanel" layoutX="10.0" layoutY="10.0" visible="true">
+        <GridPane prefHeight="380.0" prefWidth="580.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="171.0" minWidth="17.0" prefWidth="49.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="441.0" minWidth="10.0" prefWidth="409.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="121.0" minHeight="10.0" prefHeight="13.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="301.0" minHeight="10.0" prefHeight="295.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label text="Sign in" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                   GridPane.valignment="CENTER">
+                <font>
+                    <Font name="System Bold" size="30.0"/>
+                </font>
+            </Label>
+            <GridPane prefHeight="147.0" prefWidth="411.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="211.0" minWidth="10.0" prefWidth="117.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="316.0"/>
+                    <ColumnConstraints/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <TextField fx:id="loginField" maxHeight="35.0" minHeight="35.0" GridPane.columnIndex="1">
+                    <GridPane.margin>
+                        <Insets left="2.0" right="2.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <TextField fx:id="passwordField" maxHeight="35.0" minHeight="35.0" GridPane.columnIndex="1"
+                           GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets left="2.0" right="2.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <Label text="Username : " GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                    <font>
+                        <Font size="21.0"/>
+                    </font>
+                </Label>
+                <Label text="Password  : " GridPane.halignment="LEFT" GridPane.rowIndex="1"
+                       GridPane.valignment="CENTER">
+                    <font>
+                        <Font size="21.0"/>
+                    </font>
+                </Label>
+                <GridPane GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <Button maxHeight="35.0" minHeight="35.0" minWidth="100.0" mnemonicParsing="false"
+                            onAction="#doLogin" text="Login" GridPane.halignment="LEFT">
+                        <GridPane.margin>
+                            <Insets left="2.0" right="5.0"/>
+                        </GridPane.margin>
+                    </Button>
+                    <Button maxHeight="35.0" minHeight="35.0" minWidth="100.0" mnemonicParsing="false"
+                            onAction="#switchToSignUp" text="Sign up" GridPane.columnIndex="1"
+                            GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <GridPane.margin>
+                            <Insets left="5.0" right="2.0"/>
+                        </GridPane.margin>
+                    </Button>
+                </GridPane>
+                <Label id="authErrorLabel" fx:id="authErrorLabel" maxHeight="35.0" minHeight="35.0"
+                       text="Error" textFill="RED" visible="false" GridPane.columnIndex="1"
+                       GridPane.rowIndex="3">
+                    <font>
+                        <Font name="System Bold" size="15.0"/>
+                    </font>
+                </Label>
+            </GridPane>
+        </GridPane>
+    </Pane>
+    <Pane fx:id="regPanel" layoutX="10.0" layoutY="10.0" visible="false">
+        <GridPane prefHeight="380.0" prefWidth="580.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="171.0" minWidth="17.0" prefWidth="49.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="441.0" minWidth="10.0" prefWidth="409.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="121.0" minHeight="10.0" prefHeight="13.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="301.0" minHeight="10.0" prefHeight="295.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label text="Sign up" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                   GridPane.valignment="CENTER">
+                <font>
+                    <Font name="System Bold" size="30.0"/>
+                </font>
+            </Label>
+            <GridPane prefHeight="147.0" prefWidth="411.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="211.0" minWidth="10.0" prefWidth="117.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="316.0"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <TextField fx:id="regLogin" maxHeight="35.0" minHeight="35.0" GridPane.columnIndex="1">
+                    <GridPane.margin>
+                        <Insets left="2.0" right="2.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <Label text="Username : " GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                    <font>
+                        <Font size="21.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="regNick" maxHeight="35.0" minHeight="35.0" GridPane.columnIndex="1"
+                           GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets left="2.0" right="2.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <Label text="Nickname : " GridPane.rowIndex="1">
+                    <font>
+                        <Font size="21.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="regPass" maxHeight="35.0" minHeight="35.0" GridPane.columnIndex="1"
+                           GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets left="2.0" right="2.0"/>
+                    </GridPane.margin>
+                </TextField>
+                <Label text="Password  : " GridPane.halignment="LEFT" GridPane.rowIndex="2"
+                       GridPane.valignment="CENTER">
+                    <font>
+                        <Font size="21.0"/>
+                    </font>
+                </Label>
+                <GridPane GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <Button maxHeight="35.0" minHeight="35.0" minWidth="100.0"
+                            mnemonicParsing="false" onAction="#doRegister" text="Sing up"
+                            GridPane.halignment="LEFT">
+                        <GridPane.margin>
+                            <Insets left="2.0" right="5.0"/>
+                        </GridPane.margin>
+                    </Button>
+                    <Button maxHeight="35.0" minHeight="35.0" minWidth="100.0" mnemonicParsing="false"
+                            onAction="#switchToSignIn" text="Sing in" GridPane.columnIndex="1"
+                            GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <GridPane.margin>
+                            <Insets left="5.0" right="2.0"/>
+                        </GridPane.margin>
+                    </Button>
+                </GridPane>
+                <Label id="regErrorLabel" fx:id="regErrorLabel" maxHeight="35.0" minHeight="35.0"
+                       text="Error" textFill="RED" visible="false" GridPane.columnIndex="1"
+                       GridPane.rowIndex="4">
+                    <font>
+                        <Font name="System Bold" size="15.0"/>
+                    </font>
+                </Label>
+            </GridPane>
+        </GridPane>
+    </Pane>
+</Pane>
