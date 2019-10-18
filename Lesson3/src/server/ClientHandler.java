@@ -92,31 +92,6 @@ public class ClientHandler {
                         }
                     }
 
-//                    a = System.currentTimeMillis()/1000;
-                    // Поток для отключения по таймауту
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                            while (true) {
-//                                try {
-//                                    Thread.sleep(1000);
-//                                    if (System.currentTimeMillis()/1000 - a >= TIME_OUT) {
-//                                        sendMsg("Вы отключены по таймауту");
-//                                        out.writeUTF("/timeout");
-//                                        break;
-//                                    }
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-////                                // Строка для тестового отображения отсчета времени
-////                                System.out.println(System.currentTimeMillis()/1000 - a + " " + nick);
-//                            }
-//                        }
-//                    }).start();
-
                     while (true) {
                         String str = in.readUTF();
 
@@ -172,7 +147,6 @@ public class ClientHandler {
                                 AuthService.addHistorySQL(nick, str);
                             }
                         }
-//                        a = System.currentTimeMillis()/1000;
                     }
 
                 } catch (IOException e) {
@@ -180,15 +154,7 @@ public class ClientHandler {
                 } finally {
                     try {
                         in.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -212,10 +178,12 @@ public class ClientHandler {
     }
 
     public void sendMsg(String msg) {
-        try {
-            out.writeUTF(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!msg.equals("")) {
+            try {
+                out.writeUTF(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

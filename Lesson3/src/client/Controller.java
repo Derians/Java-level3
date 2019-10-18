@@ -1,13 +1,11 @@
 package client;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import java.io.DataInputStream;
@@ -80,10 +78,10 @@ public class Controller {
             setAuthorized(false);
             Thread thread = new Thread(() -> {
                 try {
-
                     while (true) {
                         String str = in.readUTF();
                         if (str.startsWith("/authOk")) {
+                            setAuthorized(true);
                             switchView("chatPanel");
                             break;
                         } else if (str.equals("/clearRegFields")) {
@@ -101,16 +99,16 @@ public class Controller {
                     while (true) {
                         String str = in.readUTF();
 
-                        if (str.equals("/serverClosed")) break;
+                        if (str.equals("/serverClosed")) {
+                            switchView("loginPanel");
+                            break;
+                        }
                         if (str.startsWith("/clientList")) {
                             String[] tokens = str.split(" ");
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    clientsList.getItems().clear();
-                                    for (int i = 1; i < tokens.length; i++) {
-                                        clientsList.getItems().add(tokens[i]);
-                                    }
+                            Platform.runLater(() -> {
+                                clientsList.getItems().clear();
+                                for (int i = 1; i < tokens.length; i++) {
+                                    clientsList.getItems().add(tokens[i]);
                                 }
                             });
                         } else if (str.equals("/timeout")) {
@@ -139,25 +137,22 @@ public class Controller {
     }
 
     private void setError(String type, String error) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                switch (type) {
-                    case "auth":
-                        authErrorLabel.setVisible(true);
-                        authErrorLabel.setText(error);
-                        break;
-                    case "reg":
-                        regErrorLabel.setVisible(true);
-                        regErrorLabel.setText(error);
-                        break;
-                    case "clear":
-                        authErrorLabel.setVisible(false);
-                        authErrorLabel.setText("");
-                        regErrorLabel.setVisible(false);
-                        regErrorLabel.setText("");
-                        break;
-                }
+        Platform.runLater(() -> {
+            switch (type) {
+                case "auth":
+                    authErrorLabel.setVisible(true);
+                    authErrorLabel.setText(error);
+                    break;
+                case "reg":
+                    regErrorLabel.setVisible(true);
+                    regErrorLabel.setText(error);
+                    break;
+                case "clear":
+                    authErrorLabel.setVisible(false);
+                    authErrorLabel.setText("");
+                    regErrorLabel.setVisible(false);
+                    regErrorLabel.setText("");
+                    break;
             }
         });
     }
@@ -165,34 +160,25 @@ public class Controller {
     private void switchView(String view) {
         switch (view) {
             case "chatPanel":
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        chatPanel.setVisible(true);
-                        loginPanel.setVisible(false);
-                        regPanel.setVisible(false);
-                    }
+                Platform.runLater(() -> {
+                    chatPanel.setVisible(true);
+                    loginPanel.setVisible(false);
+                    regPanel.setVisible(false);
                 });
                 break;
             case "regPanel":
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        chatPanel.setVisible(false);
-                        loginPanel.setVisible(false);
-                        regPanel.setVisible(true);
-                    }
+                Platform.runLater(() -> {
+                    chatPanel.setVisible(false);
+                    loginPanel.setVisible(false);
+                    regPanel.setVisible(true);
                 });
                 break;
             default:
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        chatPanel.setVisible(false);
-                        loginPanel.setVisible(true);
-                        regPanel.setVisible(false);
-                        setError("clear", "");
-                    }
+                Platform.runLater(() -> {
+                    chatPanel.setVisible(false);
+                    loginPanel.setVisible(true);
+                    regPanel.setVisible(false);
+                    setError("clear", "");
                 });
                 break;
         }
@@ -208,7 +194,21 @@ public class Controller {
         }
     }
 
-    public void doLogin(ActionEvent actionEvent) {
+    public void switchToSignUp() {
+        switchView("regPanel");
+    }
+
+    public void switchToSignIn() {
+        switchView("loginPanel");
+    }
+
+    private void clearRegField() {
+        regNick.clear();
+        regPass.clear();
+        regLogin.clear();
+    }
+
+    public void doLogin() {
         if(socket == null || socket.isClosed()) {
             connect();
         }
@@ -222,11 +222,7 @@ public class Controller {
         }
     }
 
-    public void switchToSignUp(ActionEvent actionEvent) {
-        switchView("regPanel");
-    }
-
-    public void doRegister(ActionEvent actionEvent) {
+    public void doRegister() {
         if(socket == null || socket.isClosed()) {
             connect();
         }
@@ -234,37 +230,11 @@ public class Controller {
         try {
             out.writeUTF("/addUser " + regLogin.getText().trim()
                     + " " + regNick.getText().trim()
-            + " " + regPass.getText().trim());
+                    + " " + regPass.getText().trim());
             clearRegField();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public void switchToSignIn(ActionEvent actionEvent) {
-        switchView("loginPanel");
-    }
-
-    public void clearRegField() {
-        regNick.clear();
-        regPass.clear();
-        regLogin.clear();
-    }
-
-    public void addNewUser(ActionEvent actionEvent) {
-        if(socket == null || socket.isClosed()) {
-            connect();
-        }
-
-        try {
-            out.writeUTF("/addUser " + regLogin.getText().trim()
-                    + " " + regPass.getText().trim()
-                    + " " + regNick.getText().trim());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

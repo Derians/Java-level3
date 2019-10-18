@@ -17,43 +17,48 @@ public class AuthService {
     private static Connection connection;
     private static Statement stmt;
 
-    public static void connect() throws SQLException {
+    public static void connect() {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:Lesson3/userTestDB.db");
             stmt = connection.createStatement();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static boolean addUser(String login, String nick, String pass) {
-        String sql = String.format("INSERT INTO userTable (login, password, nickname) " +
-                "VALUES ('%s', '%s', '%s')", login.trim(), pass.trim().hashCode(), nick.trim());
-        try {
-            return stmt.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        if (!login.equals("") && !pass.equals("")) {
+            String sql = String.format("INSERT INTO userTable (login, password, nickname) " +
+                    "VALUES ('%s', '%s', '%s')", login.trim(), pass.trim().hashCode(), nick.trim());
+            try {
+                return stmt.execute(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
+        return false;
     }
 
     public static String getNickByLoginAndPass(String login, String pass) {
-
-        String sql = String.format("select nickname, password FROM userTable where" +
-                " login = '%s'", login.trim());
-        try {
-            int myHash = pass.trim().hashCode();
-            ResultSet rs = stmt.executeQuery(sql);
-            if(rs.next()) {
-                String nick = rs.getString(1);
-                int dbHash = rs.getInt(2);
-                if(myHash == dbHash) {
-                    return nick;
+        if (!login.equals("") && !pass.equals("")) {
+            String sql = String.format("select nickname, password FROM userTable where" +
+                    " login = '%s'", login.trim());
+            try {
+                int myHash = pass.trim().hashCode();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    String nick = rs.getString(1);
+                    int dbHash = rs.getInt(2);
+                    if (myHash == dbHash) {
+                        return nick;
+                    }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -67,62 +72,74 @@ public class AuthService {
     }
 
     public static void addBlackListSQL (String blocker, String blocking) {
-        String sql = String.format("INSERT INTO blacklist (Blocker, Blocking) " +
-                "VALUES ('%s', '%s')", blocker, blocking);
-        try {
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (!blocker.equals("") && !blocking.equals("")) {
+            String sql = String.format("INSERT INTO blacklist (Blocker, Blocking) " +
+                    "VALUES ('%s', '%s')", blocker.trim(), blocking.trim());
+            try {
+                stmt.execute(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static void removeBlackListSQL (String blocker, String blocking) {
-        String sql = String.format("DELETE FROM blacklist WHERE Blocker = '%s' AND Blocking = '%s'", blocker, blocking);
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                stmt.execute(sql);
+        if (!blocker.equals("") && !blocking.equals("")) {
+            String sql = String.format("DELETE FROM blacklist WHERE Blocker = '%s' " +
+                    "AND Blocking = '%s'", blocker.trim(), blocking.trim());
+            try {
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    stmt.execute(sql);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
     public static List<String> blackListFromSQL (String blocker) {
-        List<String> blackList = new ArrayList<>();
-        String sql = String.format("SELECT Blocking FROM blacklist where" +
-                " Blocker = '%s'", blocker);
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                blackList.add(rs.getString(1));
+        if (!blocker.equals("")) {
+            List<String> blackList = new ArrayList<>();
+            String sql = String.format("SELECT Blocking FROM blacklist where" +
+                    " Blocker = '%s'", blocker);
+            try {
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    blackList.add(rs.getString(1));
+                }
+                return blackList;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return blackList;
+        return null;
     }
 
     public static boolean validLoginNick (String loginOrNick, String name) {
-        if (name.length() > 0) {
-            String sql = String.format("SELECT %s FROM userTable where %s = '%s'", loginOrNick, loginOrNick, name.trim());
+        if (!name.equals("")) {
+            String sql = String.format("SELECT %s FROM userTable where %s = '%s'",
+                    loginOrNick, loginOrNick, name.trim());
             ResultSet rs = null;
             try {
                 rs = stmt.executeQuery(sql);
                 return !rs.next();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
-            return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public static boolean passwordVerification(String password) {
-        Pattern p = Pattern.compile("([0-9A-za-z]).{7,}");
-        Matcher m = p.matcher(password);
-        return m.matches();
+        if (!password.equals("")) {
+            Pattern p = Pattern.compile("([0-9A-za-z]).{7,}");
+            Matcher m = p.matcher(password.trim());
+            return m.matches();
+        }
+        return false;
     }
 
     //
@@ -130,7 +147,7 @@ public class AuthService {
     //
 
     public static String changeNick(String newNick, String oldNick) {
-        if (newNick.length() > 0 && oldNick.length() > 0) {
+        if (!newNick.equals("") && !oldNick.equals("")) {
             String sql = String.format("UPDATE userTable SET nickname = '%s' WHERE" +
                     " nickname = '%s'", newNick.trim(), oldNick.trim());
             try {
@@ -138,6 +155,7 @@ public class AuthService {
                 return newNick.trim();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return null;
             }
         }
         return null;
@@ -148,12 +166,14 @@ public class AuthService {
     //
 
     public static void addHistorySQL (String nick, String msg) {
-        String sql = String.format("INSERT INTO history (nick, Msg, pubDate) " +
-                "VALUES ('%s', '%s', '%d')", nick, msg, Instant.now().getEpochSecond());
-        try {
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (!nick.equals("") && !msg.equals("")) {
+            String sql = String.format("INSERT INTO history (nick, Msg, pubDate) " +
+                    "VALUES ('%s', '%s', '%d')", nick.trim(), msg.trim(), Instant.now().getEpochSecond());
+            try {
+                stmt.execute(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
