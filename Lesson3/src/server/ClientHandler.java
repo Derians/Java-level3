@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Chaykin Ivan
@@ -36,11 +38,12 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.blackList = new ArrayList<>();
-            new Thread(() -> {
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
+            executorService.execute(() -> {
                 try {
                     while (true) {
                         String str = in.readUTF();
-                        if(str.startsWith("/addUser")) {
+                        if (str.startsWith("/addUser")) {
                             String[] tokens = str.split(" ");
                             if (tokens.length == 4) {
                                 if (AuthService.validLoginNick("login", tokens[1])) {
@@ -66,7 +69,7 @@ public class ClientHandler {
                                 }
                             }
                         }
-                        if(str.startsWith("/auth")) {
+                        if (str.startsWith("/auth")) {
                             String[] tokens = str.split(" ");
                             if (tokens.length == 3) {
                                 String newNick = AuthService.getNickByLoginAndPass(tokens[1].trim(), tokens[2].trim());
@@ -95,17 +98,17 @@ public class ClientHandler {
                     while (true) {
                         String str = in.readUTF();
 
-                        if(str.startsWith("/")){
+                        if (str.startsWith("/")) {
                             if (str.equals("/end")) {
                                 out.writeUTF("/serverClosed");
                                 break;
                             }
-                            if(str.startsWith("/w ")) {
+                            if (str.startsWith("/w ")) {
                                 String[] tokens = str.split(" ", 3);
                                 server.sendPersonalMsg(this, tokens[1], tokens[2]);
                             }
 
-                            if(str.startsWith("/blackList ")){
+                            if (str.startsWith("/blackList ")) {
                                 String[] tokens = str.split(" ");
                                 if (blackList.contains(tokens[1])) {
                                     sendMsg("Пользователь " + tokens[1] + " уже внесен в черный список");
@@ -114,7 +117,6 @@ public class ClientHandler {
                                     AuthService.addBlackListSQL(nick, tokens[1]);
                                     sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
                                 }
-
                             }
                             if (str.startsWith("/unBlackList ")) {
                                 String[] tokens = str.split(" ");
@@ -162,7 +164,7 @@ public class ClientHandler {
                     server.printLog("Клиент " + nick + " отключился");
                     server.unsubscribe(this);
                 }
-            }).start();
+            });
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,7 +179,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendMsg(String msg) {
+    void sendMsg(String msg) {
         if (!msg.equals("")) {
             try {
                 out.writeUTF(msg);

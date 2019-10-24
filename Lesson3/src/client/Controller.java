@@ -12,6 +12,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -76,7 +78,8 @@ public class Controller {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
             setAuthorized(false);
-            Thread thread = new Thread(() -> {
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
+            executorService.execute(() -> {
                 try {
                     while (true) {
                         String str = in.readUTF();
@@ -129,8 +132,6 @@ public class Controller {
                     setAuthorized(false);
                 }
             });
-            thread.setDaemon(true);
-            thread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
