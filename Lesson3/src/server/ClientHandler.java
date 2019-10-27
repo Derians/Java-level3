@@ -1,5 +1,8 @@
 package server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,6 +19,8 @@ import java.util.concurrent.Executors;
 public class ClientHandler {
 
     private int TIME_OUT = 120;
+
+    private static final Logger logger = LogManager.getLogger();
 
     private Server server;
     private Socket socket;
@@ -51,19 +56,18 @@ public class ClientHandler {
                                         if ((AuthService.passwordVerification(tokens[3]))) {
                                             if (AuthService.addUser(tokens[1], tokens[2], tokens[3])) {
                                                 sendMsg("/clearRegFields");
-                                                server.printLog("Клиент " + tokens[2] + " зарегистрировался");
+                                                logger.info("Клиент " + tokens[2] + " зарегистрировался");
                                                 sendMsg("Регистрация прошла успешно");
                                             } else {
+                                                logger.info("Регистрация не удалась");
                                                 sendMsg("Регистрация не удалась");
                                             }
                                         } else {
                                             sendMsg("/errorReg = Некорректный пароль");
                                         }
-
                                     } else {
                                         sendMsg("/errorReg = Некорректный или занятый ник");
                                     }
-
                                 } else {
                                     sendMsg("/errorReg = Некорректный или занятый логин");
                                 }
@@ -79,16 +83,18 @@ public class ClientHandler {
                                         sendMsg("/authOk");
                                         nick = newNick;
                                         server.subscribe(this);
-                                        System.out.println("Клиент " + nick + " подключился");
+                                        logger.info("Клиент " + nick + " подключился");
                                         blackList = AuthService.blackListFromSQL(nick);
                                         // Считывание истории сообщений
                                         AuthService.getHistorySQL(this);
                                         //
                                         break;
                                     } else {
+                                        logger.info("Учетная запись уже используется");
                                         sendMsg("Учетная запись уже используется");
                                     }
                                 } else {
+                                    logger.info("Неверный логин/пароль");
                                     sendAuthError("Неверный логин/пароль");
                                 }
                             }
@@ -111,10 +117,12 @@ public class ClientHandler {
                             if (str.startsWith("/blackList ")) {
                                 String[] tokens = str.split(" ");
                                 if (blackList.contains(tokens[1])) {
+                                    logger.info("Пользователь " + tokens[1] + " уже внесен в черный список");
                                     sendMsg("Пользователь " + tokens[1] + " уже внесен в черный список");
                                 } else {
                                     blackList.add(tokens[1]);
                                     AuthService.addBlackListSQL(nick, tokens[1]);
+                                    logger.info("Вы добавили пользователя " + tokens[1] + " в черный список");
                                     sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
                                 }
                             }
@@ -123,8 +131,10 @@ public class ClientHandler {
                                 if (blackList.contains(tokens[1])) {
                                     blackList.remove(tokens[1]);
                                     AuthService.removeBlackListSQL(nick, tokens[1]);
+                                    logger.info("Пользователь " + tokens[1] + " удален из черного список");
                                     sendMsg("Пользователь " + tokens[1] + " удален из черного список");
                                 } else {
+                                    logger.info("Пользователя " + tokens[1] + " нет в черном списке");
                                     sendMsg("Пользователя " + tokens[1] + " нет в черном списке");
                                 }
                             }
@@ -134,17 +144,21 @@ public class ClientHandler {
                             if (str.startsWith("/nick")) {
                                 String[] tokens = str.split(" ");
                                 if (tokens[1].equals(nick)) {
+                                    logger.info("Ваши новый и старый ники совпадают");
                                     sendMsg("Ваши новый и старый ники совпадают");
                                 } else if (AuthService.validLoginNick("nickname", tokens[1])) {
                                     nick = AuthService.changeNick(tokens[1], nick);
+                                    logger.info("Вы сменили ник на " + nick);
                                     sendMsg("Вы сменили ник на " + nick);
                                     server.broadcastClientList();
                                 } else {
+                                    logger.info(tokens[1] + " используется другим пользователем");
                                     sendMsg(tokens[1] + " используется другим пользователем");
                                 }
                             }
                         } else {
                             if (!str.equals("")) {
+                                logger.info(nick + " отправил сообщение: " + str);
                                 server.broadcastMsg(this, nick + ": " + str);
                                 AuthService.addHistorySQL(nick, str);
                             }
@@ -152,6 +166,7 @@ public class ClientHandler {
                     }
 
                 } catch (IOException e) {
+                    logger.error(e.getMessage());
                     e.printStackTrace();
                 } finally {
                     try {
@@ -159,14 +174,16 @@ public class ClientHandler {
                         out.close();
                         socket.close();
                     } catch (IOException e) {
+                        logger.error(e.getMessage());
                         e.printStackTrace();
                     }
-                    server.printLog("Клиент " + nick + " отключился");
+                    logger.info("Клиент " + nick + " отключился");
                     server.unsubscribe(this);
                 }
             });
 
         } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -175,6 +192,7 @@ public class ClientHandler {
         try {
             out.writeUTF("/errorAuth = " + error);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -184,6 +202,7 @@ public class ClientHandler {
             try {
                 out.writeUTF(msg);
             } catch (IOException e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
