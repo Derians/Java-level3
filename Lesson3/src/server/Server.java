@@ -1,12 +1,14 @@
 package server;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Chaykin Ivan
@@ -14,37 +16,39 @@ import java.util.logging.Logger;
  */
 public class Server {
     private Vector<ClientHandler> clients;
-    private final Logger logger = Logger.getLogger("");
+    private static final Logger logger = LogManager.getLogger();
 
     public Server() throws SQLException {
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
-        setLogger();
         try {
             AuthService.connect();
 //            AuthService.addUser("login1", "pass1", "nick1");
 //            AuthService.addUser("login2", "pass2", "nick2");
 //            AuthService.addUser("login3", "pass3", "nick3");
             server = new ServerSocket(8877);
-            System.out.println("Сервер запущен. Ожидаем клиентов...");
+            logger.info("Сервер запущен. Ожидаем клиентов...");
             while (true) {
                 socket = server.accept();
-                System.out.println("Клиент подключился");
+                logger.info("Клиент подключился");
                 new ClientHandler(this, socket);
                 //clients.add(new ClientHandlerOld(this, socket));
             }
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } finally {
             try {
                 socket.close();
             } catch (IOException e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
             try {
                 server.close();
             } catch (IOException e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
             AuthService.disconnect();
@@ -98,18 +102,10 @@ public class Server {
                 return;
             }
         }
+        logger.info("Клиент с ником " + nickTo + ": " + "не найден!");
         from.sendMsg("Клиент с ником " + nickTo + ": " + "не найден!");
     }
 
-    public void printLog (String msg) {
-        logger.log(Level.INFO, msg);
-    }
-
-    private void setLogger() {
-        logger.setLevel(Level.INFO);
-        logger.getHandlers()[0].setLevel(Level.INFO);
-        //Можно дописать формат вывода
-    }
 }
 
 
